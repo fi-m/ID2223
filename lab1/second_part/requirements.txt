@@ -1,0 +1,7 @@
+hopsworks
+joblib
+scikit-learn
+seaborn
+pandas
+numpy
+dataframe-image
