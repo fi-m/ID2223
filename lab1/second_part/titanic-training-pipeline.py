@@ -4,6 +4,7 @@ Slim-downed verion of the training part of the notebook
 
 ################     Initate modal    ################
 import modal
+import xgboost as xgb
 
 stub = modal.Stub("lab-1-titanic")
 image = (
@@ -51,11 +52,12 @@ def main():
             labels=["survived"],
             query=query,
         )
-
     # Create train_test_split
     X_train, X_test, y_train, y_test = fv.train_test_split(0.2)
 
     # Init model
+    # XGB
+    # model = xgb.XGBClassifier(max_depth=3)
     model = DecisionTreeClassifier(random_state=1337)
 
     # Train
