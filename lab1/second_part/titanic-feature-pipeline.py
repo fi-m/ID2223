@@ -102,8 +102,10 @@ def main():
     # Bin SibSp
     pd.cut(df['SibSp'], [0,1,2,7], right=False)
 
-    
+    # Cabin into categories based on first letter(deck of boat)
     df["Cabin"] = df["Cabin"].str.slice(0,1)
+
+    # Make a separate category of all te NANs
     df["Cabin"] = df["Cabin"].fillna("N")
 
     # Fixes for hopsworks...
