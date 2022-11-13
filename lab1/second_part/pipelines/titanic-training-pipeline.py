@@ -19,6 +19,7 @@ image = (
         ]
     )
 )
+
 ######################################################
 
 
@@ -43,7 +44,7 @@ def main():
         fv = fs.get_feature_view(name="titanic_modal_view", version=1)
     except:
         fg = fs.get_feature_group(name="titanic_modal_features", version=1)
-        query = fg.select_except(["passengerid", "title"])
+        query = fg.select_except(["title", "passengerid"])
         fv = fs.create_feature_view(
             "titanic_modal_view",
             version=1,
@@ -54,6 +55,11 @@ def main():
 
     # Create train_test_split
     X_train, X_test, y_train, y_test = fv.train_test_split(0.2)
+
+    # Drop timestamp
+    datasets = [X_train, X_test]
+    for dataset in datasets:
+        dataset.drop("timestamp", axis=1, inplace=True)
 
     # Init model
     model = DecisionTreeClassifier(random_state=1337)
@@ -85,7 +91,8 @@ def main():
 
     # Create an entry in the model registry that includes the model's name, desc, metrics
     titanic_model = mr.python.create_model(
-        name="titanic_modal",
+        name="titanic_modal_simple_classifier",
+        version=1,
         metrics={"accuracy": metrics["accuracy"]},
         model_schema=model_schema,
         description="Titanic Survial-rate Predictions",
