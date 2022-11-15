@@ -15,11 +15,12 @@ image = modal.Image.debian_slim().pip_install(
 )
 
 ################ Dicts with encodings ################
-cleanup_catergories = {"sex": {"female": 1, "male": 0}, "embarked": {"S": 0, "C": 1, "Q": 2}, "Cabin": {"N": 0, "C": 1, "E": 2, "G": 3, "D":4, "A": 5, "B": 6, "F": 7, "T": 8}}
+# cleanup_catergories = {"sex": {"female": 1, "male": 0}, "embarked": {"S": 0, "C": 1, "Q": 2}, "Cabin": {"N": 0, "C": 1, "E": 2, "G": 3, "D":4, "A": 5, "B": 6, "F": 7, "T": 8}}
 
 sex_dict = {"female": 1, "male": 0}
 embarked_dict = {"S": 0, "C": 1, "Q": 2}
-
+cabin_dict = {"N": 0, "C": 1, "E": 2, "G": 3, "D":4, "A": 5, "B": 6, "F": 7, "T": 8}
+cleanup_catergories = {"sex": sex_dict, "embarked": embarked_dict, "cabin": cabin_dict}
 
 # Reversed
 """
@@ -58,7 +59,7 @@ def main():
     import pandas as pd
     import numpy as np
     import hopsworks
-
+    import datetime
     # Load the data_frame
     df = pd.read_csv(
         "https://raw.githubusercontent.com/ID2223KTH/id2223kth.github.io/master/assignments/lab1/titanic.csv"
@@ -114,20 +115,27 @@ def main():
     # Final encoding
     df = df.replace(cleanup_catergories)
 
+    # Add event_time column to data frame
+    time_now = datetime.datetime.now()
+    timestamps = np.full((len(df), 1), time_now, dtype=datetime.datetime)
+    df["timestamp"] = timestamps
+
     # Load hopsworks project
     project = hopsworks.login()
     fs = project.get_feature_store()
 
     # Create feature group
-    fg = fs.get_or_create_feature_group(
+    fg = fs.create_feature_group(
         name="titanic_modal_features",
-        # online_enabled=True,
         version=1,
         primary_key=["passengerid"],
         description="Processed Titanic Dataset",
+        event_time="timestamp",
     )
 
-    # Have to overwrite since hopsworks validation blocks connection
+    print("LENGTH OF DATA FRAME", len(df))
+
+    # Over write old data
     fg.insert(df, overwrite=True)
 
 
