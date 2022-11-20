@@ -4,7 +4,6 @@ Slim-downed verion of the training part of the notebook
 
 ################     Initate modal    ################
 import modal
-import xgboost as xgb
 
 stub = modal.Stub("lab-1-titanic")
 image = (
@@ -53,6 +52,7 @@ def main():
             labels=["survived"],
             query=query,
         )
+
     # Create train_test_split
     X_train, X_test, y_train, y_test = fv.train_test_split(0.2)
 
@@ -62,8 +62,6 @@ def main():
         dataset.drop("timestamp", axis=1, inplace=True)
 
     # Init model
-    # XGB
-    # model = xgb.XGBClassifier(max_depth=3)
     model = DecisionTreeClassifier(random_state=1337)
 
     # Train
@@ -94,10 +92,10 @@ def main():
     # Create an entry in the model registry that includes the model's name, desc, metrics
     titanic_model = mr.python.create_model(
         name="titanic_modal_simple_classifier",
-        version=1,
+        version=2,
         metrics={"accuracy": metrics["accuracy"]},
         model_schema=model_schema,
-        description="Titanic Survial-rate Predictions",
+        description="Titanic Survial-Rate Predictions",
     )
 
     # Upload the model to the model registry, including all files in 'model_dir'

@@ -78,7 +78,7 @@ def generate_passenger():
 
 @stub.function(
     image=image,
-    schedule=modal.Period(minutes=3),
+    schedule=modal.Period(hours=20),
     secret=modal.Secret.from_name("titanic-secret"),
 )
 def main():

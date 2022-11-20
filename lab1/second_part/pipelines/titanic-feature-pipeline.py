@@ -15,13 +15,9 @@ image = modal.Image.debian_slim().pip_install(
 )
 
 ################ Dicts with encodings ################
-# cleanup_catergories = {"sex": {"female": 1, "male": 0}, "embarked": {"S": 0, "C": 1, "Q": 2}, "Cabin": {"N": 0, "C": 1, "E": 2, "G": 3, "D":4, "A": 5, "B": 6, "F": 7, "T": 8}}
-
 sex_dict = {"female": 1, "male": 0}
 embarked_dict = {"S": 0, "C": 1, "Q": 2}
-cabin_dict = {"N": 0, "C": 1, "E": 2, "G": 3, "D":4, "A": 5, "B": 6, "F": 7, "T": 8}
-cleanup_catergories = {"sex": sex_dict, "embarked": embarked_dict, "cabin": cabin_dict}
-
+cleanup_catergories = {"sex": sex_dict, "embarked": embarked_dict}
 # Reversed
 """
 title_dict = {
@@ -66,7 +62,7 @@ def main():
     )
 
     # Drop features and NaNs
-    df.drop(["Ticket", "Fare"], axis=1, inplace=True)
+    df.drop(["Ticket", "Fare", "Cabin"], axis=1, inplace=True)
     df = df[df["Embarked"].notna()]
 
     # Feature engineering
@@ -93,21 +89,6 @@ def main():
 
     # Cast age to int
     df["Age"] = df["Age"].astype("int")
-    # Bin ages
-    df['Age'] = pd.cut(df['Age'],[0,8,15,30,65,150])
-
-    # Bin fare
-    df['Fare'] = pd.cut(df['Fare'],[0,200,400,600,1000])
-    
-    
-    # Bin SibSp
-    pd.cut(df['SibSp'], [0,1,2,7], right=False)
-
-    # Cabin into categories based on first letter(deck of boat)
-    df["Cabin"] = df["Cabin"].str.slice(0,1)
-
-    # Make a separate category of all te NANs
-    df["Cabin"] = df["Cabin"].fillna("N")
 
     # Fixes for hopsworks...
     df.columns = df.columns.str.lower()

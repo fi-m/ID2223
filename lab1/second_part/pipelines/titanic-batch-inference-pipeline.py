@@ -1,26 +1,32 @@
 ###########     Initate modal    #####################
 import modal
 
-stub = modal.Stub("lab-1-titanic")
+stub = modal.Stub("lab-1-titanic-batch-inference")
 image = (
     modal.Image.debian_slim()
     .apt_install(["libgomp1"])
     .pip_install(
         [
             "pandas",
-            "numpy",
             "hopsworks",
             "scikit-learn",
             "seaborn",
+            "dataframe-image",
+            "joblib",
         ]
     )
 )
 ######################################################
 
-# @stub.function(image=image, secret=modal.Secret.from_name("titanic-secret"))
 
-
+@stub.function(
+    image=image,
+    schedule=modal.Period(days=1),
+    secret=modal.Secret.from_name("titanic-secret"),
+)
 def main():
+    from sklearn.metrics import confusion_matrix
+    import seaborn as sns
     import hopsworks
     import joblib
     import datetime
@@ -50,7 +56,6 @@ def main():
 
     # Generate predictions on new batch data
     y_pred = model.predict(df)
-    print(y_pred[-1])
 
     # Last prediction
     latest_prediction = y_pred[-1]
@@ -126,14 +131,17 @@ def main():
         "passengerid": [passengerid],
     }
     monitor_df = pd.DataFrame(data)
-    monitor_fg.insert(monitor_df, write_options={"wait_for_job": False})
+    if passengerid not in monitor_fg.read().passengerid.values:
+        print("Inserting new row")
+        monitor_fg.insert(monitor_df, write_options={"wait_for_job": False})
 
     history_df = monitor_fg.read()
     # Add our prediction to the history, as the history_df won't have it -
     # the insertion was done asynchronously, so it will take ~1 min to land on App
-    history_df = pd.concat([history_df, monitor_df])
+    if passengerid not in history_df.passengerid.values:
+        history_df = pd.concat([history_df, monitor_df])
 
-    df_recent = history_df.tail(5)
+    df_recent = history_df.tail(10)
     dfi.export(
         df_recent, "../resources/images/df_recent.png", table_conversion="matplotlib"
     )
@@ -141,12 +149,31 @@ def main():
         "../resources/images/df_recent.png", "Resources/images", overwrite=True
     )
 
+    print("HISTORY: \n", history_df)
     predictions = history_df[["prediction"]]
     labels = history_df[["label"]]
 
-    # TODO: CREATE HISTORTY AND UPLOAD IT
+    # Confusion matrix
+    if predictions.value_counts().size == 2:
+        results = confusion_matrix(labels, predictions)
+        df_cm = pd.DataFrame(
+            results,
+            ["True Non-Survival", "True Survival"],
+            ["Pred Non-Survival", "Pred Survival"],
+        )
+
+        cm = sns.heatmap(df_cm, annot=True)
+        fig = cm.get_figure()
+        fig.savefig("../resources/images/confusion_matrix.png")
+        dataset_api.upload(
+            "../resources/images/confusion_matrix.png",
+            "Resources/images",
+            overwrite=True,
+        )
+    else:
+        print("Not enough data to create confusion matrix")
 
 
 if __name__ == "__main__":
-    main()
+    stub.deploy("lab-1-titanic-batch-inference")
     # TODO
