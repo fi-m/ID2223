@@ -1,4 +1,4 @@
-# ID2223
+# ID2223 Lab 1
 
 ## Description
 We used modal, hopsworks and huggingface spaces to create a prediction app for the survival of titanic passengers. We also implemented batch inference to run on randomly generated data and a monitoring app for the predictions on this data.
