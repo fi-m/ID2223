@@ -1,6 +1,7 @@
 ## DS_store
 *.DS_store
-
+*.hw_api_key
+resources/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

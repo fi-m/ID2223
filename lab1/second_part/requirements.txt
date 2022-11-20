@@ -5,3 +5,4 @@ seaborn
 pandas
 numpy
 dataframe-image
+modal-client
