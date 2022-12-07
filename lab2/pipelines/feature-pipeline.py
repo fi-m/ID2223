@@ -25,7 +25,7 @@ image = (
 
 
 ################     Initate pipeline    ################
-# @stub.function(image=image, secret=modal.Secret.from_name("lab2_whisper"), timeout=1000)
+@stub.function(image=image, secret=modal.Secret.from_name("lab2_whisper"), timeout=1000)
 def main():
     # Log into huggingface
     import os
@@ -96,9 +96,8 @@ def main():
         batch["labels"] = tokenizer(batch["sentence"]).input_ids
         return batch
 
-
     print("Before preprocessing")
-    __import__('pprint').pprint(common_voice)
+    __import__("pprint").pprint(common_voice)
     print("ROW= ", common_voice["train"][0])
 
     # Prepare the datasets
@@ -107,7 +106,7 @@ def main():
     )
 
     print("After preprocessing")
-    __import__('pprint').pprint(common_voice)
+    __import__("pprint").pprint(common_voice)
     print("ROW= ", common_voice["train"][0])
 
     helper = Helper()
@@ -118,5 +117,5 @@ def main():
 
 
 if __name__ == "__main__":
-    # with stub.run():
-    main()
+    with stub.run():
+        main()
