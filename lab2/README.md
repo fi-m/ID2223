@@ -1,5 +1,5 @@
 # Improving model performance
-There are many ways one can try to improve the model performance
+There are many ways one can try to improve the model performance, these can be broadly divided into two categories; model centric and data centric.
 
 ## Model centric
 
