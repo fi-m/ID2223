@@ -29,6 +29,6 @@ NST:     https://huggingface.co/fimster/whisper-small-sv-SE-NST
 
 # Gradio
 
-The goal with our app was to showcase how AI, especially ASRs can be utilized for gameification. We did this by creating a simple language learning app, where the user sees an image and is proped to respond with the correct word for it. However, due to limitations, the app is very spartanic, but it works as a PoC. 
+The goal with our app was to showcase how AI, especially ASRs can be utilised for gameification – a hot topic for many diffirent industry sectors. A example is online language learing, schools working remote or in the context of an organisation Dualingo. We showcased this by creating a simple language learning app, where the user sees an image and is prompted to respond with the correct word for it. However, due to limitations, the app is very spartanic, but it works as a PoC.
 
 Link to app: https://huggingface.co/spaces/antonbol/finetune_whisper
