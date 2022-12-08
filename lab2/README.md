@@ -5,7 +5,7 @@ There are many ways one can try to improve the model performance, these can be b
 
 ### Tune hyperparameters
 One thing you can do to try and improve model performance is to adjust the hyperparameters, in our case the most significant hyperparameter to tweak is the learning rate. A too low of a learning rate means the model weights will converge slower so you have to train for longer for the same result. A too high of a learning rate might make the model weights miss their local optima values completely. We ran a few low step-experiments with different values of the learning rate in order to view how it might affect our model. Below are the results with the WER in % on the Y-axis and the learning rate hyperparameter on the X-axis.
-![image](./image.png)
+![image](./images/image.png)
 
 There are other hyperparameters that can be tuned such as the dropout in order to reduce overfitting. However each experiment takes a lot of time and computing units on colab so we decided to only run experiments on the learning rate.
 
