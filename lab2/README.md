@@ -2,7 +2,7 @@
 There are many ways one can try to improve the model performance
 
 ## Model centric
-
+![image](./image.png)
 ### Tune hyperparameters
 
 ### Fine tuning model architecture
