@@ -20,3 +20,8 @@ One thing that can be done is to look for better data sources that you can train
 
 ### Feature engineering
 Another thing that can be done is change how the feature engineering is done in order to get a more information dense representation of the data. In our case this would mean changing the process in which the audio files are converted into log mel spectograms. Basic things like changing the length that we cut each file(30s at the moment) are within our reach but changing the core feature engineering process and make it better than the default one in whisper-small requires signal processing expertise that we do not have.
+
+
+### Link to models
+Mozzila: https://huggingface.co/fimster/whisper-small-sv-SE
+NST:     https://huggingface.co/fimster/whisper-small-sv-SE-NST
