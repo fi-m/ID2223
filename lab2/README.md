@@ -22,7 +22,13 @@ One thing that can be done is to look for better data sources that you can train
 Another thing that can be done is change how the feature engineering is done in order to get a more information dense representation of the data. In our case this would mean changing the process in which the audio files are converted into log mel spectograms. Basic things like changing the length that we cut each file(30s at the moment) are within our reach but changing the core feature engineering process and make it better than the default one in whisper-small requires signal processing expertise that we do not have.
 
 
-### Link to models
+## Link to models
 Mozzila: https://huggingface.co/fimster/whisper-small-sv-SE
 
 NST:     https://huggingface.co/fimster/whisper-small-sv-SE-NST
+
+# Gradio
+
+The goal with our app was to showcase how AI, especially ASRs can be utilized for gameification. We did this by creating a simple language learning app, where the user sees an image and is proped to respond with the correct word for it. However, due to limitations, the app is very spartanic, but it works as a PoC. 
+
+Link to app: https://huggingface.co/spaces/antonbol/finetune_whisper
