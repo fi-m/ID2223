@@ -25,7 +25,7 @@ Another thing that can be done is change how the feature engineering is done in 
 ## Link to models
 Mozzila: https://huggingface.co/fimster/whisper-small-sv-SE , WER: 19.7736%
 
-NST: https://huggingface.co/fimster/whisper-small-sv-SE-NST , WER: 10.1678
+NST: https://huggingface.co/fimster/whisper-small-sv-SE-NST , WER: 10.1678%
 
 # Gradio
 
