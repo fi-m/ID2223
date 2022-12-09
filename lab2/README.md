@@ -16,16 +16,20 @@ Another thing that can be done is to adjust the architecture of the model, we di
 
 
 ### Find new data sources
-One thing that can be done is to look for better data sources that you can train your model on. We looked around for swedish datasets and found the NST dataset and a version was available on huggingface. We trained a new model using a subset of 12000 NST-audio files(similar amount as for the Mozilla data) and got an improved WER (word error rate) performance. However the validation of these datasets were done on their own testing splits
+One thing that can be done is to look for better data sources that you can train your model on. We looked around for swedish datasets and found the NST dataset and a version was available on huggingface. We trained a new model using a subset of 12000 NST-audio files(similar amount as for the Mozilla data) and got an improved WER (word error rate) performance. However the validation of these datasets were done on their own testing splits so the comparison might not be fair. In order to check if our NST-trained model was better than the Mozilla-trained model, we evaluated the WER of both models on 100 samples from the mozilla test-data. In this comparison the NST model got a WER of 22% while the Mozilla model got a WER of 19%. The model trained on Mozilla is biased toward the structure of the data of the Mozilla dataset. Therefore we argue that the small difference in performance on Mozilla data combined with the large difference in performance on the models' own respective data shows that the NST model is overall better.
+
+#### Models' WER on 100 samples of mozilla test data
+| Model | WER |
+| ----------- | ----------- |
+| NST | 22% |
+| Mozilla | 19% |
+
 
 ### Feature engineering
 Another thing that can be done is change how the feature engineering is done in order to get a more information dense representation of the data. In our case this would mean changing the process in which the audio files are converted into log mel spectograms. Basic things like changing the length that we cut each file(30s at the moment) are within our reach but changing the core feature engineering process and make it better than the default one in whisper-small requires signal processing expertise that we do not have.
 
 
-| Model | WER |
-| ----------- | ----------- |
-| NST | 22% |
-| Mozilla | 19% |
+
 
 ## Link to models
 Mozzila: https://huggingface.co/fimster/whisper-small-sv-SE , WER: 19.7736%
