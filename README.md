@@ -12,3 +12,8 @@ https://huggingface.co/spaces/antonbol/titanic
 
 ## Monitoring App
 https://huggingface.co/spaces/antonbol/titanic_batch_monitoring
+
+# ID2223 Lab 2
+
+## Description
+In Lab 2, we fine tuned the model: whisper-small for transcription of swedish using colab. We also improved our finetuned model using primarily a data centric approach, more information on the improvement is in the [README of the Lab 2 folder](https://github.com/fi-m/ID2223/blob/main/lab2/README.md). We also created a POC Gradio application]on hugginface that uses the transcription model.
