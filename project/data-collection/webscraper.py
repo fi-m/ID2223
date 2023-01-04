@@ -3,16 +3,13 @@
 # used to gather new traning data
 
 from ytmusicapi import YTMusic
+import time
 import billboard
-from dataclasses import dataclass
 import pandas as pd
 import numpy as np
 import datetime
 import hopsworks
 from utils import Song
-
-### Global Variables ###
-MIN_DIFF = 10
 
 
 class Scraper:
@@ -168,6 +165,9 @@ class Scraper:
         # Drop index column
         self.df.reset_index(drop=True, inplace=True)
 
+        # Convert timedelta to seconds
+        self.df["diff"] = self.df["diff"].dt.total_seconds()
+
         # Upload to Hopsworks
         fg = fs.get_or_create_feature_group(
             name="youtube_music_data_from_billboard",
@@ -177,10 +177,14 @@ class Scraper:
             event_time="timestamp",
         )
 
-        try:
-            fg.insert(self.df)
-        except:
-            print("Error uploading to Hopsworks")
+        fg.insert(self.df)
+        # while True:
+        #     try:
+        #         fg.insert(self.df)
+        #         break
+        #     except:
+        #         print("Error uploading to Hopsworks")
+        #         time.sleep(60)
 
 
 if __name__ == "__main__":
