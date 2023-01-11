@@ -13,8 +13,8 @@ import librosa.display
 class YoutubeDownloader:
     def __init__(self):
         self.df = self._get_df_from_hopsworks()
-        self.test_dir = "instruments/"
-        self.train_dir = "mixtures/"
+        self.inst_dir = "instruments/"
+        self.mix_dir = "mixtures/"
 
     def _get_df_from_hopsworks(self):
         # Get Feature Store
@@ -29,12 +29,12 @@ class YoutubeDownloader:
 
     def download(self):
         # Make test and train directories
-        os.makedirs(self.test_dir, exist_ok=True)
-        os.makedirs(self.train_dir, exist_ok=True)
+        os.makedirs(self.inst_dir, exist_ok=True)
+        os.makedirs(self.mix_dir, exist_ok=True)
 
         for song in self._get_song():
-            self._download(song, song.url, self.train_dir)
-            self._download(song, song.inst_url, self.test_dir)
+            self._download(song, song.url, self.mix_dir)
+            self._download(song, song.inst_url, self.inst_dir)
 
     def _get_song(self):
         # yield one row from the dataframe
@@ -68,29 +68,35 @@ class YoutubeDownloader:
         """
         Function to trim the audio files to the same length
         """
-        for inst_wav, song_wav, song_name in self._get_files():
+        for Y_inst, Y_song, sr, song_name in self._get_files():
             # Before trim
             print("SONG NAME: ", song_name)
             print("BERFORE TRIM")
-            print("LENGTH OF SONG: ", librosa.get_duration(y=song_wav))
-            print("LENGTH OF INST: ", librosa.get_duration(y=inst_wav))
-            self._wav_to_spectrogram(song_wav, song_name)
-            self._wav_to_spectrogram(inst_wav, song_name + " inst")
+            print("LENGTH OF SONG: ", librosa.get_duration(y=Y_song, sr=sr))
+            print("LENGTH OF INST: ", librosa.get_duration(y=Y_inst, sr=sr))
+            # self._wav_to_spectrogram(Y_song, song_name)
+            # self._wav_to_spectrogram(Y_inst, song_name + " inst")
 
             # Trim
-            song_wav, inst_wav = self._trim(song_wav, inst_wav)
+            Y_song, Y_inst = self._trim(Y_song, Y_inst)
 
             # After trim
             print("AFTER TRIM")
-            print("LENGTH OF SONG: ", librosa.get_duration(y=song_wav))
-            print("LENGTH OF INST: ", librosa.get_duration(y=inst_wav))
+            print("LENGTH OF SONG: ", librosa.get_duration(y=Y_song, sr=sr))
+            print("LENGTH OF INST: ", librosa.get_duration(y=Y_inst, sr=sr))
+
+            # Save the files
+            self._save_files(Y_song, Y_inst, song_name, sr)
 
     def _get_files(self):
-        for file in os.listdir(self.test_dir):
+        for file in os.listdir(self.inst_dir):
             if file.endswith(".wav"):
+                Y, sr = librosa.load(self.inst_dir + file, mono=False)
+                X, _ = librosa.load(self.mix_dir + file, mono=False)
                 yield (
-                    librosa.load(self.test_dir + file)[0],
-                    librosa.load(self.train_dir + file)[0],
+                    Y,
+                    X,
+                    sr,
                     file,
                 )
 
@@ -110,7 +116,7 @@ class YoutubeDownloader:
         plt.ylabel("Frequency")
         plt.show()
 
-    def _trim(self, song, inst):
+    def _trim(self, Y_song, Y_inst):
         """
         Function to trim the audio files to the same length
 
@@ -124,10 +130,38 @@ class YoutubeDownloader:
         song : np.array
         inst : np.array
         """
+        # Get the length of the shortest audio file
 
-        # TODO: Make the function
+        min_len_c1 = min(len(Y_song[0]), len(Y_inst[0]))
+        min_len_c2 = min(len(Y_song[1]), len(Y_inst[1]))
 
-        return song, inst
+        Y_trim_song_c1 = Y_song[0][:min_len_c1]
+        Y_trim_song_c2 = Y_song[1][:min_len_c2]
+
+        Y_trim_inst_c1 = Y_inst[0][:min_len_c1]
+        Y_trim_inst_c2 = Y_inst[1][:min_len_c2]
+
+        Y_song = np.array([Y_trim_song_c1, Y_trim_song_c2], dtype=float)
+        Y_inst = np.array([Y_trim_inst_c1, Y_trim_inst_c2], dtype=float)
+
+        # Trim the audio files
+        return Y_song, Y_inst
+
+    def _save_files(self, Y_song, Y_inst, song_name, sr):
+        # Save the files
+        sf.write(
+            self.inst_dir + song_name,
+            Y_inst.T,
+            sr,
+            subtype="PCM_24",
+        )
+
+        sf.write(
+            self.mix_dir + song_name,
+            Y_song.T,
+            sr,
+            subtype="PCM_24",
+        )
 
 
 if __name__ == "__main__":
