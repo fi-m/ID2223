@@ -13,8 +13,8 @@ import librosa.display
 class YoutubeDownloader:
     def __init__(self):
         self.df = self._get_df_from_hopsworks()
-        self.inst_dir = "instruments/"
-        self.mix_dir = "mixtures/"
+        self.inst_dir = "./dataset/instruments/"
+        self.mix_dir = "./dataset/mixtures/"
 
     def _get_df_from_hopsworks(self):
         # Get Feature Store
