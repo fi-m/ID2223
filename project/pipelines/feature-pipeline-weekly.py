@@ -9,6 +9,9 @@ from tqdm import tqdm
 import pandas as pd
 
 
+# TODO: ADD YTDOWNLOADER
+
+
 class FeaturePipelineWeekly:
     def __init__(self, sr=22050, hop_length=512, n_fft=1024):
         self.sr = sr
@@ -57,7 +60,7 @@ class FeaturePipelineWeekly:
             coef = np.max([np.abs(X).max(), np.abs(y).max()])
             song_name = os.path.splitext(os.path.basename(X_path))[0]
             artist, title = song_name.split(" - ")
-            ret.append([X, y, coef, artist, title])
+            ret.append([X_cache_path, y_cache_path, coef, artist, title])
 
         return ret
 
@@ -68,7 +71,13 @@ class FeaturePipelineWeekly:
         artist = []
         title = []
 
-        for x, y_, coef_, artist_, title_ in training_set:
+        for (
+            x,
+            y_,
+            coef_,
+            artist_,
+            title_,
+        ) in training_set:
             X.append(x)
             y.append(y_)
             coef.append(coef_)
@@ -88,8 +97,36 @@ class FeaturePipelineWeekly:
         return df
 
     def upload_to_hopsworks(self, df):
+        inst_path = "TrainigData/Instrumentals/"
+        mix_path = "TraningData/Mixtures/"
+
         project = hopsworks.login()
+        dataset_api = project.get_dataset_api()
+
+        # print column names
+        x_hops = []
+        y_hops = []
+        print("Uploading to hopsworks...")
+        success = False
+        while not success:
+            try:
+                for row in tqdm(df.itertuples()):
+                    # upload mixtures
+                    mix_path = "TrainingData/mixtures"
+                    x_hops.append(mix_path)
+                    dataset_api.upload(row.x, mix_path, overwrite=True)
+
+                    # upload instrumentals
+                    inst_path = "TrainingData/instrumentals"
+                    y_hops.append(inst_path)
+                    dataset_api.upload(row.y, inst_path, overwrite=True)
+                success = True
+            except:
+                print("Failed to upload, retrying...")
+
         fs = project.get_feature_store()
+        df["x"] = x_hops
+        df["y"] = y_hops
 
         # Add event_time column to data frame
         time_now = datetime.datetime.now()
@@ -103,7 +140,7 @@ class FeaturePipelineWeekly:
         fg = fs.get_or_create_feature_group(
             name="processed_youtube_music_data_from_billboard",
             version=1,
-            primary_key=["title", "artist"],
+            primary_key=["artist", "title"],
             description="Processed data from Billboard",
             event_time="timestamp",
         )
