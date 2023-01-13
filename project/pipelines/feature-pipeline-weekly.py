@@ -102,9 +102,6 @@ class FeaturePipelineWeekly:
         return df
 
     def upload_to_hopsworks(self, df):
-        inst_path = "TrainigData/Instrumentals/"
-        mix_path = "TraningData/Mixtures/"
-
         project = hopsworks.login()
         dataset_api = project.get_dataset_api()
 
