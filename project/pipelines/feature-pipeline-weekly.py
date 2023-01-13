@@ -1,16 +1,16 @@
-import os
-import hopsworks
-import librosa
-import datetime
-import numpy as np
-import soundfile as soundfile
-import spec_utils
-from tqdm import tqdm
-import pandas as pd
 import sys
+import pandas as pd
+from tqdm import tqdm
+import spec_utils
+import soundfile as soundfile
+import numpy as np
+import datetime
+import librosa
+import hopsworks
+import os
+
 sys.path.append("../data-collection")
 from youtube_downloader import YoutubeDownloader
-
 
 class FeaturePipelineWeekly:
     def __init__(self, sr=22050, hop_length=512, n_fft=1024):
@@ -118,12 +118,16 @@ class FeaturePipelineWeekly:
                 for row in tqdm(df.itertuples()):
                     # upload mixtures
                     mix_path = "TrainingData/mixtures"
-                    x_hops.append(mix_path)
+                    x_hops.append(
+                        mix_path + "/" + row.artist + " - " + row.title + ".npy"
+                    )
                     dataset_api.upload(row.x, mix_path, overwrite=True)
 
                     # upload instrumentals
                     inst_path = "TrainingData/instrumentals"
-                    y_hops.append(inst_path)
+                    y_hops.append(
+                        inst_path + "/" + row.artist + " - " + row.title + ".npy"
+                    )
                     dataset_api.upload(row.y, inst_path, overwrite=True)
                 success = True
             except:
