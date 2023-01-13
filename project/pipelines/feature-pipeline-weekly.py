@@ -7,9 +7,9 @@ import soundfile as soundfile
 import spec_utils
 from tqdm import tqdm
 import pandas as pd
-
-
-# TODO: ADD YTDOWNLOADER
+import sys
+sys.path.append("../data-collection")
+from youtube_downloader import YoutubeDownloader
 
 
 class FeaturePipelineWeekly:
@@ -19,6 +19,11 @@ class FeaturePipelineWeekly:
         self.n_fft = n_fft
         self.inst_dir = "../data-collection/instruments/"
         self.mix_dir = "../data-collection/mixtures/"
+
+    def download_from_youtube(self):
+        yd = YoutubeDownloader()
+        yd.download()
+        yd.trim_files()
 
     def get_filelist(self):
         self.filelist = self._make_pairs()
@@ -152,6 +157,7 @@ if __name__ == "__main__":
     # Create a FeaturePipelineWeekly object
     pipeline = FeaturePipelineWeekly()
     # Run the pipeline
+    pipeline.download_from_youtube()
     t = pipeline.run()
     # Convert to a pandas dataframe
     df = pipeline.convert_to_df(t)
