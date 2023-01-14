@@ -3,7 +3,6 @@
 # used to gather new traning data
 
 from ytmusicapi import YTMusic
-import time
 import billboard
 import pandas as pd
 import numpy as np
@@ -11,12 +10,49 @@ import datetime
 import hopsworks
 from utils import Song
 
+LOCAL = True
+
+
+################     Initate modal    #################
+
+if not LOCAL:
+    import modal
+
+    stub = modal.Stub("scrape-urls-weekly")
+    image = (
+        modal.Image.debian_slim()
+        .pip_install(
+            [
+                "hopsworks",
+                "librosa",
+                "pandas",
+                "soundfile",
+                "numpy",
+                "ytmusicapi",
+                "billboard.py",
+            ]
+        )
+        .apt_install(["ffmpeg"])
+    )
+
+
+#########################################################
+
 
 class Scraper:
+    if not LOCAL:
+        from ytmusicapi import YTMusic
+        import billboard
+        import pandas as pd
+        import numpy as np
+        import datetime
+        import hopsworks
+        from utils import Song
+
     def __init__(self):
         self.chart = billboard.ChartData("hot-100")
-        self.yt = YTMusic("secrets/headers_auth.json")
-        # Use if for non-auth --->  self.yt = YTMusic()
+        # self.yt = YTMusic("secrets/headers_auth.json")
+        self.yt = YTMusic()
         self.df = pd.DataFrame(columns=["title", "artist", "url", "inst_url", "diff"])
 
     def _get_songs(self):
@@ -25,6 +61,7 @@ class Scraper:
 
     def scrape(self):
         for song in self._get_songs():
+            found_insts = ""
             found_songs = self._get_song(song)
 
             if len(found_songs) > 0:
@@ -187,7 +224,21 @@ class Scraper:
         #         time.sleep(60)
 
 
+if not LOCAL:
+
+    @stub.function(image=image, secret=modal.Secret.from_name("project"), timeout=1000)
+    def main():
+        scraper = Scraper()
+        scraper.scrape()
+        scraper.upload_to_hopsworks()
+
+
 if __name__ == "__main__":
-    scraper = Scraper()
-    scraper.scrape()
-    scraper.upload_to_hopsworks()
+    if LOCAL:
+        scraper = Scraper()
+        scraper.scrape()
+        scraper.upload_to_hopsworks()
+
+    else:
+        with stub.run():
+            main()
