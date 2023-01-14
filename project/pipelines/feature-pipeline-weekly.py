@@ -1,3 +1,5 @@
+import modal
+
 import sys
 import pandas as pd
 from tqdm import tqdm
@@ -5,14 +7,49 @@ import spec_utils
 import soundfile as soundfile
 import numpy as np
 import datetime
-import librosa
 import hopsworks
 import os
 
 sys.path.append("../data-collection")
 from youtube_downloader import YoutubeDownloader
 
+################     Initate modal    #################
+
+stub = modal.Stub("feature-pipeline-weekly")
+image = (
+    modal.Image.debian_slim()
+    .pip_install(
+        [
+            "hopsworks",
+            "librosa",
+            "pandas",
+            "soundfile",
+        ]
+    )
+    .apt_install(["ffmpeg"])
+)
+
+
+#########################################################
+
+LOCAL = True
+
+
 class FeaturePipelineWeekly:
+    if not LOCAL:
+        import sys
+        import pandas as pd
+        from tqdm import tqdm
+        import spec_utils
+        import soundfile as soundfile
+        import numpy as np
+        import datetime
+        import hopsworks
+        import os
+
+        sys.path.append("../data-collection")
+        from youtube_downloader import YoutubeDownloader
+
     def __init__(self, sr=22050, hop_length=512, n_fft=1024):
         self.sr = sr
         self.hop_length = hop_length
@@ -154,13 +191,23 @@ class FeaturePipelineWeekly:
         fg.insert(df)
 
 
+@stub.function(image=image, secret=modal.Secret.from_name("project"), timeout=1000)
+def main():
+    fp = FeaturePipelineWeekly()
+    fp.download_from_youtube()
+    training_set = fp.run()
+    df = fp.convert_to_df(training_set)
+    fp.upload_to_hopsworks(df)
+
+
 if __name__ == "__main__":
-    # Create a FeaturePipelineWeekly object
-    pipeline = FeaturePipelineWeekly()
-    # Run the pipeline
-    pipeline.download_from_youtube()
-    t = pipeline.run()
-    # Convert to a pandas dataframe
-    df = pipeline.convert_to_df(t)
-    # Upload to Hopsworks
-    pipeline.upload_to_hopsworks(df)
+    if LOCAL:
+        fp = FeaturePipelineWeekly()
+        fp.download_from_youtube()
+        training_set = fp.run()
+        df = fp.convert_to_df(training_set)
+        fp.upload_to_hopsworks(df)
+
+    else:
+        with stub.run():
+            main()
