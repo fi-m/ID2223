@@ -1,4 +1,3 @@
-import modal
 
 import sys
 import pandas as pd
@@ -13,26 +12,30 @@ import os
 sys.path.append("../data-collection")
 from youtube_downloader import YoutubeDownloader
 
-################     Initate modal    #################
 
-stub = modal.Stub("feature-pipeline-weekly")
-image = (
-    modal.Image.debian_slim()
-    .pip_install(
-        [
-            "hopsworks",
-            "librosa",
-            "pandas",
-            "soundfile",
-        ]
+LOCAL = True
+
+################     Initate modal    #################
+if not LOCAL:
+    import modal
+
+    stub = modal.Stub("feature-pipeline-weekly")
+    image = (
+        modal.Image.debian_slim()
+        .pip_install(
+            [
+                "hopsworks",
+                "librosa",
+                "pandas",
+                "soundfile",
+            ]
+        )
+        .apt_install(["ffmpeg"])
     )
-    .apt_install(["ffmpeg"])
-)
 
 
 #########################################################
 
-LOCAL = True
 
 
 class FeaturePipelineWeekly:
@@ -191,13 +194,14 @@ class FeaturePipelineWeekly:
         fg.insert(df)
 
 
-@stub.function(image=image, secret=modal.Secret.from_name("project"), timeout=1000)
-def main():
-    fp = FeaturePipelineWeekly()
-    fp.download_from_youtube()
-    training_set = fp.run()
-    df = fp.convert_to_df(training_set)
-    fp.upload_to_hopsworks(df)
+if not LOCAL:
+    @stub.function(image=image, secret=modal.Secret.from_name("project"), timeout=1000)
+    def main():
+        fp = FeaturePipelineWeekly()
+        fp.download_from_youtube()
+        training_set = fp.run()
+        df = fp.convert_to_df(training_set)
+        fp.upload_to_hopsworks(df)
 
 
 if __name__ == "__main__":
