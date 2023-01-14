@@ -1,3 +1,4 @@
+# Vocal Remover Architecture
 We have built a scalable architecture for a model that takes as input a song file and returns the song with all vocals removed.
 
 ## INFRASTRUCTURE
