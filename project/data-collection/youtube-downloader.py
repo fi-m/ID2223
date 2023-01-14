@@ -11,8 +11,8 @@ import librosa.display
 
 
 class YoutubeDownloader:
-    def __init__(self):
-        self.df = self._get_df_from_hopsworks()
+    def __init__(self, df = None):
+        self.df = self._get_df_from_hopsworks()        
         self.inst_dir = "./dataset/instruments/"
         self.mix_dir = "./dataset/mixtures/"
 
