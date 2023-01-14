@@ -66,7 +66,7 @@ We utilised hopsworks for two feature groups. The first utilisation was when sto
 
 The Diff column is used so we can filter songs that are too diffirent in length (song vs instrumental) since we argue that in the future we could have devloped a better trimming function able to utilise pairs with a larger diff.
 
-The Time Stamp column is used for batch inference.
+The Time Stamp column would be used for batch inference.
 
 The second utilisation is for our proposed `feature-pipeline-weekly`, where the processed data is stored on hopsworks and the schema looks as follows:
 
