@@ -1,0 +1,11 @@
+billboard.py==7.0.0
+hopsworks==3.0.5
+librosa==0.9.2
+matplotlib==3.6.3
+modal==0.4.1
+modal_client==0.40.237
+numpy==1.24.1
+pandas==1.5.2
+soundfile==0.11.0
+tqdm==4.64.1
+ytmusicapi==0.24.1
