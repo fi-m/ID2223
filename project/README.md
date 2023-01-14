@@ -5,7 +5,7 @@ We have built a scalable architecture for a model that takes as input a song fil
 
 The broad infrastructure of the system is illustrated in the below sketch.
 
-TODO: Anton lägg till sketch av modellarkitektur
+![System Architecture](./Untitled Diagram.drawio.png "System Architecture")
 
 The different parts of the system and their respective interfaces are described in the following sections.
 
