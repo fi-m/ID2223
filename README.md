@@ -22,5 +22,6 @@ In Lab 2, we fine tuned the model __whisper-small__ for transcription of swedish
 # ID2223 Project
 
 ## Description
-TODO, project not finished.
+For our project, we made scalable system architecture for a vocal-remover model. More information can be found in the README inside the project folder.
+A demo of the inference is available here: https://huggingface.co/spaces/antonbol/vocal_remover.
 
