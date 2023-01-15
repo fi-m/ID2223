@@ -70,7 +70,6 @@ find . -type f -name *instrumentals.wav | while IFS= read -r f; do
     mv "$f" "./${name%.*}_inst.wav"
 done
 ```
-```
 
 
 ## TRAINING PIPELINE
