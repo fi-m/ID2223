@@ -45,8 +45,35 @@ We also split the dataset into 20 validation songs and 80 training songs such th
 Since the base dataset is quite large and we are using the free memory-limited version of hopsworks, we store the dataset as a zipped file on google drive which we unzip and use in the training pipeline. The training pipeline is therefore most easily run in google colab for seamless integration with google drive.
 
 ### BASH SCRIPTS
+#### ffmpeg amix script
+```
+#!/bin/bash -e
+shopt -s globstar
+# for every folder in currend working directory, run ffmpeg amix on the drums, bass and other files in that directory
+for f in ./*/; do
+    echo "$f"
+    d="${f}drums.wav" 
+    b="${f}bass.wav" 
+    o="${f}other.wav" 
+    ffmpeg -i "$d" -i "$b" -i "$o" -filter_complex amix=inputs=3:duration=first:dropout_transition=3 "${f}instrumentals.wav"    
+done
+```
+#### Move and rename instrumentals, fm_mix.sh contains equivalent script for mixtures.
+```
+#!/bin/bash    
+# Recursively finds all files named instrumentals.wav and moves them to working directory and
+# renames them based on which top level folder they were found in
+# example: in wd there is a folder called "001 - songname" and in this folder there is a file "instrumentals.wav"
+# result: instrumentals.wav is moved to wd and named 001_inst.wav. The same search and move happens for all folders in wd
+find . -type f -name *instrumentals.wav | while IFS= read -r f; do
+    echo ${f:2:3}
+    name=${f:2:3}
+    #((++i))
+    mv "$f" "./${name%.*}_inst.wav"
+done
+```
+```
 
-TODO: add bash scripts, anton
 
 ## TRAINING PIPELINE
 
