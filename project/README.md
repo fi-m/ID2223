@@ -25,7 +25,7 @@ We use hopsworks for storage of the scraped youtube URLs. Different versions of 
 
 Our inference pipeline is in the form of a gradio application hosted on Huggingface: https://huggingface.co/spaces/antonbol/vocal_remover, it takes a .waw/.mp3 song file as input, fetches a model from HW to use for inference, uses the pre-made interface for inference from the open source repo and returns a .wav file containing the song with the vocals removed.
 ### FURTHER IMPROVEMENTS
-Further improvements could be to connect the FP to the IP so that the user can give a youtube URL as input as an alternative to providing an audio file. An additional improvent to this could be to make a batch inference pipeline that automatically performs inference on the new songs that are added into HW. The model would also have to be trained for considerably more time to function very well. Currently it retains some fragments of the vocals and the remocal is not complete.
+Further improvements could be to connect the FP to the IP so that the user can give a youtube URL as input as an alternative to providing an audio file. An additional improvement to this could be to make a batch inference pipeline that automatically performs inference on the new songs that are added into HW. The model would also have to be trained for considerably more time to function very well. Currently it retains some fragments of the vocals and the removal is not complete.
 
 ## OPEN SOURCE MODEL
 
