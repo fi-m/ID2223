@@ -5,7 +5,7 @@ We have built a scalable architecture for a model that takes as input a song fil
 
 The broad infrastructure of the system is illustrated in the below sketch.
 
-![System Architecture](./sys_arc.png "System Architecture")
+![System Architecture](./remover_arch.drawio.png "System Architecture")
 
 The different parts of the system and their respective interfaces are described in the following sections.
 
